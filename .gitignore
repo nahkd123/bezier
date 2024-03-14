@@ -1,0 +1,6 @@
+/target/
+
+# Eclipse and VSCode
+/.classpath
+/.project
+/.settings/
