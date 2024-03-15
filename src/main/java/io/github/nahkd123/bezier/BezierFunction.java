@@ -1,6 +1,8 @@
 package io.github.nahkd123.bezier;
 
+import java.util.function.DoubleFunction;
 import java.util.function.DoubleUnaryOperator;
+import java.util.function.UnaryOperator;
 
 /**
  * <p>
@@ -9,10 +11,9 @@ import java.util.function.DoubleUnaryOperator;
  * (and slower). Threshold less than or equals to 0 are not allowed.
  * </p>
  */
-public record BezierFunction(Bezier curve, double threshold) implements DoubleUnaryOperator {
+public record BezierFunction(Bezier curve, double threshold) implements DoubleUnaryOperator, UnaryOperator<Double>, DoubleFunction<double[]> {
 	public BezierFunction {
 		if (threshold <= 0) throw new IllegalArgumentException("Threshold can't be less than or equals to 0");
-		if (curve.dimensions() != 2) throw new IllegalArgumentException("Curve must be 2D");
 	}
 
 	public BezierFunction(Bezier curve) {
@@ -21,6 +22,7 @@ public record BezierFunction(Bezier curve, double threshold) implements DoubleUn
 
 	@Override
 	public double applyAsDouble(double x) {
+		if (curve.dimensions() != 2) throw new IllegalArgumentException("Curve must be 2D");
 		double start = Math.min(x, 0d), end = Math.max(x, 1d);
 		double middle = 0.5d;
 		double[] xy = new double[2];
@@ -34,5 +36,34 @@ public record BezierFunction(Bezier curve, double threshold) implements DoubleUn
 		}
 
 		return xy[1];
+	}
+
+	@Override
+	public Double apply(Double t) {
+		return applyAsDouble(t.doubleValue());
+	}
+
+	public double[] apply(double x, int targetAxis) {
+		if (targetAxis >= curve.dimensions())
+			throw new IndexOutOfBoundsException("targetAxis is larger than or equals to dimensions ("
+				+ targetAxis + " > " + curve.dimensions() + ")");
+		double start = Math.min(x, 0d), end = Math.max(x, 1d);
+		double middle = 0.5d;
+		double[] xy = new double[curve.dimensions()];
+
+		while (Math.abs(end - start) > threshold) {
+			curve.interpolate(middle, xy, 0);
+			if (x == xy[targetAxis]) return xy;
+			if (x > xy[targetAxis]) start = middle;
+			if (x < xy[targetAxis]) end = middle;
+			middle = (start + end) / 2;
+		}
+
+		return xy;
+	}
+
+	@Override
+	public double[] apply(double value) {
+		return apply(value, 0);
 	}
 }

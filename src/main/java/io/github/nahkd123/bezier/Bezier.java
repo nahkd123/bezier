@@ -8,9 +8,9 @@ package io.github.nahkd123.bezier;
  * <b>How to use:</b> The first parameter of record constructor is the number of
  * dimensions (n-th dimension), the second parameter is an array of values for
  * control points, where each control point uses n elements in the array. For
- * example, a 2D curve with 3 control points (cubic curve) will have 6 elements
- * in data array: index 0 and 1 is for the first control point, 2 and 3 for
- * second, 4 and 5 for third.
+ * example, a 2D curve with 3 control points (quadratic curve) will have 6
+ * elements in data array: index 0 and 1 is for the first control point, 2 and 3
+ * for second, 4 and 5 for third.
  * </p>
  * <p>
  * To interpolate, use {@link #interpolate(double)} or
