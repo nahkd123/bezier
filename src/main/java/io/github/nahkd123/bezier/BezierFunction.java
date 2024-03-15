@@ -23,19 +23,7 @@ public record BezierFunction(Bezier curve, double threshold) implements DoubleUn
 	@Override
 	public double applyAsDouble(double x) {
 		if (curve.dimensions() != 2) throw new IllegalArgumentException("Curve must be 2D");
-		double start = Math.min(x, 0d), end = Math.max(x, 1d);
-		double middle = 0.5d;
-		double[] xy = new double[2];
-
-		while (Math.abs(end - start) > threshold) {
-			curve.interpolate(middle, xy, 0);
-			if (x == xy[0]) return xy[1];
-			if (x > xy[0]) start = middle;
-			if (x < xy[0]) end = middle;
-			middle = (start + end) / 2;
-		}
-
-		return xy[1];
+		return apply(x, 0)[0];
 	}
 
 	@Override
